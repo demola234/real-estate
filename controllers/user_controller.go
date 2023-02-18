@@ -88,7 +88,6 @@ func SignUp() gin.HandlerFunc {
 		email := c.PostForm("email")
 		first_name := c.PostForm("first_name")
 		last_name := c.PostForm("last_name")
-		password := c.PostForm("password")
 
 		users.First_Name = &first_name
 		users.Last_Name = &last_name
@@ -129,12 +128,6 @@ func SignUp() gin.HandlerFunc {
 		}
 
 		users.Avatar = &uploadImage
-		passwordUser, err := utils.HashPassword(password)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "error hashing password"})
-			return
-		}
-		users.Password = &passwordUser
 
 		otp := utils.GenerateOTP()
 		otpExpiration := time.Now().Add(15 * time.Minute) // set expiration time to 15 minutes from now
@@ -167,6 +160,42 @@ func SignUp() gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, gin.H{"data": "please check your email to verify your account", "id": insertedID})
+	}
+}
+
+func CreatePassword() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var ctx, cancel = context.WithTimeout(context.Background(), 200*time.Second)
+		defer cancel()
+		var password interfaces.Password
+		var foundUser models.User
+
+		if err := c.BindJSON(&password); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		error := userCollection.FindOne(ctx, bson.M{"email": password.Email}).Decode(&foundUser)
+		if error != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "user not found"})
+			return
+		}
+
+		newPass := password.Password
+		if foundUser.Password != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "password already exists"})
+
+		}
+
+		passwordUser, err := utils.HashPassword(newPass)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "error hashing password"})
+			return
+		}
+
+		userCollection.UpdateOne(ctx, bson.M{"email": password.Email}, bson.M{"$set": bson.M{"password": passwordUser}})
+		c.JSON(http.StatusOK, gin.H{"data": "password created successfully"})
+
 	}
 }
 

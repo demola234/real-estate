@@ -13,6 +13,7 @@ func UserRoutes(incomingRoutes *gin.Engine) {
 	incomingRoutes.POST("/users/login", controllers.Login())
 	incomingRoutes.POST("/users/verifyOtp", controllers.VerifyOtp())
 	incomingRoutes.POST("/users/resendOtp", controllers.ResendOtp())
+	incomingRoutes.POST("/users/createPassword", controllers.CreatePassword())
 	incomingRoutes.POST("/users/forgetPassword", controllers.ForgotPassword())
 	incomingRoutes.POST("/users/resetPassword", controllers.ResetPassword())
 	incomingRoutes.POST("/users/google", controllers.GoogleOauth())
