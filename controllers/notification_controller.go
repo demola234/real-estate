@@ -1,6 +1,14 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"context"
+	"net/http"
+	"time"
+
+	"github.com/demola234/real-estate/interfaces"
+	"github.com/demola234/real-estate/services"
+	"github.com/gin-gonic/gin"
+)
 
 func GetNotification() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -26,7 +34,7 @@ func DeleteNotification() gin.HandlerFunc {
 
 }
 
-func SendPushNotification() gin.HandlerFunc {
+func SendushNotification() gin.HandlerFunc {
 	return func(c *gin.Context) {
 	}
 
@@ -34,6 +42,29 @@ func SendPushNotification() gin.HandlerFunc {
 
 func SendEmailNotification() gin.HandlerFunc {
 	return func(c *gin.Context) {
+	}
+
+}
+
+func TestPushNotification() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		_, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		var push interfaces.PushNotification
+
+		if err := c.BindJSON(&push); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		push.Body = "Test"
+		push.Title = "Test"
+		push.To = "cY0"
+		err := services.SendPushNotificationToAll(&push)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 	}
 
 }

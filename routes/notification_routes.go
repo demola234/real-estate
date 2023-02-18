@@ -9,4 +9,5 @@ func NotificationRoutes(incomingRoutes *gin.Engine) {
 	incomingRoutes.GET("/notifications", controllers.GetNotifications())
 	incomingRoutes.GET("/notifications/:notification_id", controllers.GetNotification())
 	incomingRoutes.DELETE("/notifications/:notification_id", controllers.DeleteNotification())
+	incomingRoutes.POST("/notifications/user", controllers.TestPushNotification())
 }
