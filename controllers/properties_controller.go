@@ -1,10 +1,15 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/demola234/real-estate/database"
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
+)
 
+var propertyCollection *mongo.Collection = database.OpenCollection(database.Client, "properties")
 func AddProperty() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
+		
 	}
 }
 
@@ -55,6 +60,7 @@ func GetPropertyByLocation() gin.HandlerFunc {
 
 func FeaturedProperties() gin.HandlerFunc {
 	return func(c *gin.Context) {
+
 
 	}
 

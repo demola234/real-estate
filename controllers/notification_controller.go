@@ -50,17 +50,14 @@ func TestPushNotification() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		_, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
-		var push interfaces.PushNotification
+		var push interfaces.PushNotificationToUser
 
 		if err := c.BindJSON(&push); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		push.Body = "Test"
-		push.Title = "Test"
-		push.To = "cY0"
-		err := services.SendPushNotificationToAll(&push)
+		err := services.SendPushNotificationToUser(&push)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return

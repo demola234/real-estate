@@ -12,7 +12,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-func SendPushNotificationToAll(p *interfaces.PushNotification) error {
+func SendPushNotificationToAll(p *interfaces.PushNotificationToAll) error {
 
 	app, _, _ := SetupFirebase()
 
@@ -30,11 +30,15 @@ func SendPushNotificationToAll(p *interfaces.PushNotification) error {
 		Tokens: p.Tokens,
 	})
 
+	if error != nil {
+		log.Fatalln(error)
+	}
+
 	fmt.Println("Successfully sent message:", response)
 	return error
 }
 
-func SendPushNotificationToUser(p *interfaces.PushNotification) error {
+func SendPushNotificationToUser(p *interfaces.PushNotificationToUser) error {
 
 	app, _, _ := SetupFirebase()
 
@@ -63,9 +67,9 @@ func SetupFirebase() (*firebase.App, context.Context, *messaging.Client) {
 	ctx := context.Background()
 
 	//Firebase service account key file path
-	serviceAccountKeyFilePath, err := filepath.Abs("estato-push_notification-firebase.json")
+	serviceAccountKeyFilePath, err := filepath.Abs("homely-push-notification-firebase.json")
 	if err != nil {
-		panic("Unable to load estato-push_notification-firebase.json file")
+		panic("Unable to load homely-push-notification-firebase.json file")
 	}
 
 	opt := option.WithCredentialsFile(serviceAccountKeyFilePath)
